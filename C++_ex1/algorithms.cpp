@@ -2,10 +2,9 @@
 #include "graph.hpp"
 #include <iostream>
 
-
 using namespace graph;
 
-// Queue implementation for BFS (not use STL)
+// ------------------------ Queue for BFS (No STL) ------------------------
 class Queue {
 private:
     int* arr;
@@ -27,7 +26,7 @@ public:
     }
 };
 
-// ** Disjoint Set implementation for Kruskal **
+// ------------------------ Disjoint Set (for Kruskal) ------------------------
 class DisjointSet {
 private:
     int* parent;
@@ -54,23 +53,23 @@ public:
     }
 };
 
-// ** BFS Algorithm **
+// ------------------------ BFS ------------------------
 Graph Algorithms::bfs(const Graph& g, int src) {
     int n = g.getNumVertices();
     Graph tree(n);
     bool* visited = new bool[n]();
     Queue q(n);
-    
+
     visited[src] = true;
     q.push(src);
-    
+
     while (!q.isEmpty()) {
         int u = q.pop();
         for (int v = 0; v < n; v++) {
             if (g.isEdge(u, v) && !visited[v]) {
                 visited[v] = true;
                 q.push(v);
-                tree.addEdge(u, v);
+                tree.addEdge(u, v); // Edge in BFS tree
             }
         }
     }
@@ -78,16 +77,16 @@ Graph Algorithms::bfs(const Graph& g, int src) {
     return tree;
 }
 
-// ** DFS Algorithm **
+// ------------------------ DFS ------------------------
 Graph Algorithms::dfs(const Graph& g, int src) {
     int n = g.getNumVertices();
     Graph tree(n);
     bool* visited = new bool[n]();
     int* stack = new int[n];
     int top = -1;
-    
+
     stack[++top] = src;
-    
+
     while (top >= 0) {
         int u = stack[top--];
         if (!visited[u]) {
@@ -105,26 +104,26 @@ Graph Algorithms::dfs(const Graph& g, int src) {
     return tree;
 }
 
-// ** Dijkstra’s Algorithm **
+// ------------------------ Dijkstra ------------------------
 Graph Algorithms::dijkstra(const Graph& g, int src) {
     int n = g.getNumVertices();
     Graph tree(n);
     int* dist = new int[n];
     int* parent = new int[n];
     bool* visited = new bool[n]();
-    
+
     for (int i = 0; i < n; i++) dist[i] = INT_MAX, parent[i] = -1;
     dist[src] = 0;
-    
+
     for (int i = 0; i < n; i++) {
         int u = -1;
         for (int j = 0; j < n; j++)
             if (!visited[j] && (u == -1 || dist[j] < dist[u]))
                 u = j;
-        
+
         if (dist[u] == INT_MAX) break;
         visited[u] = true;
-        
+
         for (int v = 0; v < n; v++) {
             if (g.isEdge(u, v) && dist[u] + g.weight(u, v) < dist[v]) {
                 dist[v] = dist[u] + g.weight(u, v);
@@ -132,17 +131,17 @@ Graph Algorithms::dijkstra(const Graph& g, int src) {
             }
         }
     }
-    
+
     for (int v = 0; v < n; v++)
         if (parent[v] != -1) tree.addEdge(parent[v], v, g.weight(parent[v], v));
-    
+
     delete[] dist;
     delete[] parent;
     delete[] visited;
     return tree;
 }
 
-// ** Prim’s Algorithm **
+// ------------------------ Prim ------------------------
 Graph Algorithms::prim(const Graph& g) {
     int n = g.getNumVertices();
     Graph mst(n);
@@ -151,15 +150,16 @@ Graph Algorithms::prim(const Graph& g) {
     int* key = new int[n];
     for (int i = 0; i < n; i++) key[i] = INT_MAX, parent[i] = -1;
     key[0] = 0;
-    
+
     for (int count = 0; count < n; count++) {
         int u = -1;
         for (int i = 0; i < n; i++)
             if (!inMST[i] && (u == -1 || key[i] < key[u]))
                 u = i;
-        
+
+        if (u == -1) throw std::runtime_error("Graph is not connected");
         inMST[u] = true;
-        
+
         for (int v = 0; v < n; v++) {
             if (g.isEdge(u, v) && !inMST[v] && g.weight(u, v) < key[v]) {
                 key[v] = g.weight(u, v);
@@ -167,7 +167,7 @@ Graph Algorithms::prim(const Graph& g) {
             }
         }
     }
-    
+
     for (int v = 1; v < n; v++) mst.addEdge(parent[v], v, g.weight(parent[v], v));
     delete[] inMST;
     delete[] parent;
@@ -175,17 +175,12 @@ Graph Algorithms::prim(const Graph& g) {
     return mst;
 }
 
-//////////////////
-
-
-
-// ** Kruskal’s Algorithm **
+// ------------------------ Kruskal ------------------------
 Graph Algorithms::kruskal(const Graph& g) {
     int n = g.getNumVertices();
     Graph mst(n);
     DisjointSet ds(n);
 
-    // Step 1: Extract edges from adjacency matrix
     struct Edge {
         int u, v, weight;
     };
@@ -201,7 +196,7 @@ Graph Algorithms::kruskal(const Graph& g) {
         }
     }
 
-    // Step 2: Sort edges by weight (Simple Bubble Sort for no STL)
+    // Sort edges by weight (bubble sort)
     for (int i = 0; i < edgeCount - 1; i++) {
         for (int j = 0; j < edgeCount - i - 1; j++) {
             if (edges[j].weight > edges[j + 1].weight) {
@@ -212,13 +207,12 @@ Graph Algorithms::kruskal(const Graph& g) {
         }
     }
 
-    // Step 3: Add edges while ensuring no cycles
     int edgesInMST = 0;
     for (int i = 0; i < edgeCount && edgesInMST < n - 1; i++) {
         int u = edges[i].u;
         int v = edges[i].v;
 
-        if (ds.find(u) != ds.find(v)) { // No cycle
+        if (ds.find(u) != ds.find(v)) {
             ds.unite(u, v);
             mst.addEdge(u, v, edges[i].weight);
             edgesInMST++;

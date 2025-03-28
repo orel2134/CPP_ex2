@@ -28,6 +28,9 @@ public:
     // Prints the adjacency matrix
     void printGraph() const;
 
+    // ✅ NEW: Prints the tree in a hierarchical format from a given root
+    void printGraph(int root, int level = 0, bool* visited = nullptr) const;
+
     // Returns the number of vertices in the graph
     size_t getNumVertices() const;
 

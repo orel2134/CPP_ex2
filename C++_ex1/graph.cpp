@@ -1,4 +1,5 @@
 #include "graph.hpp"
+#include <iostream>
 
 namespace graph {
 
@@ -47,21 +48,27 @@ void Graph::removeEdge(int src, int dest) {
     adjacencyMatrix[dest][src] = INT_MAX;
 }
 
-// Prints the adjacency matrix
-void Graph::printGraph() const {
-    if (numVertices == 0) {
-        std::cout << "Graph is empty." << std::endl;
-        return;
+// Prints the tree in a hierarchical format from a root
+void Graph::printGraph(int root, int level, bool* visited) const {
+    bool isTopLevel = false;
+    if (!visited) {
+        visited = new bool[numVertices]();
+        isTopLevel = true;
     }
 
-    for (size_t i = 0; i < numVertices; i++) {
-        std::cout << i << ": ";
-        for (size_t j = 0; j < numVertices; j++) {
-            if (adjacencyMatrix[i][j] != INT_MAX) {
-                std::cout << "(" << j << ", " << adjacencyMatrix[i][j] << ") ";
-            }
+    visited[root] = true;
+
+    for (int i = 0; i < level; ++i) std::cout << "  ";
+    std::cout << root << std::endl;
+
+    for (int v = 0; v < numVertices; v++) {
+        if (isEdge(root, v) && !visited[v]) {
+            printGraph(v, level + 1, visited);
         }
-        std::cout << std::endl;
+    }
+
+    if (isTopLevel) {
+        delete[] visited;
     }
 }
 
