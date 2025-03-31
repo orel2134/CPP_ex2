@@ -29,12 +29,14 @@ void Graph::addEdge(int src, int dest, int weight) {
     if (src >= numVertices || dest >= numVertices) {
         throw std::out_of_range("Invalid vertex index");
     }
-    if (weight <= 0) {
-        throw std::invalid_argument("Edge weight must be positive");
+    if (weight == 0) {
+        throw std::invalid_argument("Edge weight must be non-zero");
     }
+
     adjacencyMatrix[src][dest] = weight;
     adjacencyMatrix[dest][src] = weight; // Undirected graph
 }
+
 
 // Removes an edge between `src` and `dest`
 void Graph::removeEdge(int src, int dest) {

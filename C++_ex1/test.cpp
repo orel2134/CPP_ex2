@@ -17,10 +17,10 @@ TEST_CASE("BFS Algorithm - Basic Cases") {
     Graph g3(3);
     g3.addEdge(0, 1, 1);
     g3.addEdge(1, 2, 1);
-    Graph bfsTree3 = Algorithms::bfs(g3, 0);
+    Graph bfsTree3 = Algorithms::bfs(g3, 0);//start with vertices 0
     CHECK(bfsTree3.isEdge(0, 1));
     CHECK(bfsTree3.isEdge(1, 2));
-    CHECK_FALSE(bfsTree3.isEdge(0, 2));
+    CHECK_FALSE(bfsTree3.isEdge(0, 2));//there is no direct edge between 0 and 2.
 }
 
 TEST_CASE("BFS Algorithm - Large Graph & Edge Cases") {
@@ -60,6 +60,42 @@ TEST_CASE("DFS Algorithm - Basic Cases") {
     CHECK(dfsTree3.isEdge(1, 2));
     CHECK_FALSE(dfsTree3.isEdge(0, 2));
 }
+
+
+/////////////////////
+
+
+TEST_CASE("DFS Algorithm - Branching") {
+    Graph g(5);
+    g.addEdge(0, 1);
+    g.addEdge(0, 2);
+    g.addEdge(1, 3);
+    g.addEdge(2, 4);
+
+    Graph dfsTree = Algorithms::dfs(g, 0);
+
+    // נוודא שכל הקשתות של העץ קיימות:
+    CHECK(dfsTree.isEdge(0, 1));
+    CHECK(dfsTree.isEdge(1, 3));
+    CHECK(dfsTree.isEdge(0, 2));
+    CHECK(dfsTree.isEdge(2, 4));
+
+    // נוודא שלא נוספו קשתות מיותרות:
+    CHECK_FALSE(dfsTree.isEdge(0, 3));
+    CHECK_FALSE(dfsTree.isEdge(1, 2));
+    CHECK_FALSE(dfsTree.isEdge(1, 4));
+}
+
+
+//////////////////////////
+
+
+
+
+
+
+
+
 
 TEST_CASE("DFS Algorithm - Edge Cases") {
     Graph g4(4);
@@ -106,6 +142,27 @@ TEST_CASE("Dijkstra Algorithm - Edge Cases") {
     CHECK(dijkstraTree5.isEdge(0, 1));
 }
 
+
+
+
+/////////////////
+
+TEST_CASE("Dijkstra should throw on negative weight") {
+    Graph g(3);
+    g.addEdge(0, 1, 5);
+    g.addEdge(1, 2, -4); // Invalid for Dijkstra
+
+    CHECK_THROWS_WITH(Algorithms::dijkstra(g, 0), "Dijkstra cannot handle negative edge weights");
+}
+
+
+
+
+
+/////////////////
+
+
+
 // ------------------------ Prim ------------------------
 TEST_CASE("Prim Algorithm - Basic Cases") {
     Graph g1(0);
@@ -138,6 +195,29 @@ TEST_CASE("Prim Algorithm - Edge Cases") {
     CHECK_THROWS(Algorithms::prim(g5));
 }
 
+
+
+
+///////////
+TEST_CASE("Prim with Negative Weights") {
+    Graph g(4);
+    g.addEdge(0, 1, -2);
+    g.addEdge(1, 2, 4);
+    g.addEdge(2, 3, -1);
+    g.addEdge(0, 3, 3);
+
+    Graph primTree = Algorithms::prim(g);
+
+    // Prim should still select the minimum weight edges (even if negative)
+    CHECK(primTree.isEdge(0, 1)); // -2
+    CHECK(primTree.isEdge(2, 3)); // -1
+    // the third edge could be 1-2 or 0-3 depending on internal priority, so we allow both:
+    CHECK((primTree.isEdge(1, 2) || primTree.isEdge(0, 3)));
+}
+
+
+//////////
+
 // ------------------------ Kruskal ------------------------
 TEST_CASE("Kruskal Algorithm - Basic Cases") {
     Graph g1(0);
@@ -164,6 +244,30 @@ TEST_CASE("Kruskal Algorithm - Edge Cases") {
     CHECK(kruskalTree5.isEdge(0, 1));  
     CHECK(kruskalTree5.isEdge(2, 3));  
 }
+
+
+
+
+///////////
+
+TEST_CASE("Kruskal with Negative Weights") {
+    Graph g(4);
+    g.addEdge(0, 1, -2);
+    g.addEdge(1, 2, 4);
+    g.addEdge(2, 3, -1);
+    g.addEdge(0, 3, 3);
+
+    Graph kruskalTree = Algorithms::kruskal(g);
+
+    CHECK(kruskalTree.isEdge(0, 1)); // -2
+    CHECK(kruskalTree.isEdge(2, 3)); // -1
+    CHECK(kruskalTree.isEdge(0, 3)); // 3 was added
+    CHECK_FALSE(kruskalTree.isEdge(1, 2)); // not included (would cause cycle)
+}
+
+
+
+//////////
 
 // ------------------------ Print Example ------------------------
 TEST_CASE("Visual Print of BFS Tree") {

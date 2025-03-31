@@ -1,6 +1,7 @@
 #include "algorithms.hpp"
 #include "graph.hpp"
 #include <iostream>
+#include <stdexcept>
 
 using namespace graph;
 
@@ -40,7 +41,7 @@ public:
     }
     ~DisjointSet() { delete[] parent; delete[] rank; }
     int find(int u) {
-        if (parent[u] != u) parent[u] = find(parent[u]); // Path compression
+        if (parent[u] != u) parent[u] = find(parent[u]);
         return parent[u];
     }
     void unite(int u, int v) {
@@ -69,7 +70,7 @@ Graph Algorithms::bfs(const Graph& g, int src) {
             if (g.isEdge(u, v) && !visited[v]) {
                 visited[v] = true;
                 q.push(v);
-                tree.addEdge(u, v); // Edge in BFS tree
+                tree.addEdge(u, v);
             }
         }
     }
@@ -107,6 +108,16 @@ Graph Algorithms::dfs(const Graph& g, int src) {
 // ------------------------ Dijkstra ------------------------
 Graph Algorithms::dijkstra(const Graph& g, int src) {
     int n = g.getNumVertices();
+
+    // בדיקה לצלעות עם משקל שלילי
+    for (int u = 0; u < n; u++) {
+        for (int v = 0; v < n; v++) {
+            if (g.isEdge(u, v) && g.weight(u, v) < 0) {
+                throw std::invalid_argument("Dijkstra cannot handle negative edge weights");
+            }
+        }
+    }
+
     Graph tree(n);
     int* dist = new int[n];
     int* parent = new int[n];
@@ -176,18 +187,30 @@ Graph Algorithms::prim(const Graph& g) {
 }
 
 // ------------------------ Kruskal ------------------------
+/**
+ * Constructs a Minimum Spanning Tree (MST) using Kruskal's algorithm.
+ * Supports negative edge weights. Assumes the input graph is undirected.
+ *
+ * @param g - The input graph
+ * @return A graph representing the MST
+ */
+// ------------------------ Kruskal ------------------------
+// ------------------------ Kruskal ------------------------
 Graph Algorithms::kruskal(const Graph& g) {
     int n = g.getNumVertices();
     Graph mst(n);
     DisjointSet ds(n);
 
+    // Edge struct for internal use
     struct Edge {
         int u, v, weight;
     };
 
+    // Allocate array to store all possible edges (upper triangle of matrix)
     Edge* edges = new Edge[n * n];
     int edgeCount = 0;
 
+    // Step 1: Collect edges (including negative weights)
     for (int u = 0; u < n; u++) {
         for (int v = u + 1; v < n; v++) {
             if (g.isEdge(u, v)) {
@@ -195,8 +218,7 @@ Graph Algorithms::kruskal(const Graph& g) {
             }
         }
     }
-
-    // Sort edges by weight (bubble sort)
+    // Step 2: Bubble sort edges by weight (including negative)
     for (int i = 0; i < edgeCount - 1; i++) {
         for (int j = 0; j < edgeCount - i - 1; j++) {
             if (edges[j].weight > edges[j + 1].weight) {
@@ -207,15 +229,14 @@ Graph Algorithms::kruskal(const Graph& g) {
         }
     }
 
-    int edgesInMST = 0;
-    for (int i = 0; i < edgeCount && edgesInMST < n - 1; i++) {
+    // Step 3: Kruskal - add edges if no cycle is formed
+    for (int i = 0; i < edgeCount; i++) {
         int u = edges[i].u;
         int v = edges[i].v;
 
         if (ds.find(u) != ds.find(v)) {
             ds.unite(u, v);
             mst.addEdge(u, v, edges[i].weight);
-            edgesInMST++;
         }
     }
 
