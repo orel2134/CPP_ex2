@@ -5,6 +5,8 @@
 
 using namespace graph;
 
+
+
 // ------------------------ BFS ------------------------
 TEST_CASE("BFS Algorithm - Basic Cases") {
     Graph g1(0);
@@ -43,10 +45,59 @@ TEST_CASE("BFS Algorithm - Large Graph & Edge Cases") {
     CHECK_FALSE(bfsTree5.isEdge(3, 4));
 }
 
+
+
+
+TEST_CASE("BFS - Disconnected Components") {
+    Graph g(6);
+    g.addEdge(0, 1);
+    g.addEdge(1, 2);
+    g.addEdge(3, 4);
+    g.addEdge(4, 5);
+
+    Graph bfsTree = Algorithms::bfs(g, 0);
+
+    CHECK(bfsTree.isEdge(0, 1));
+    CHECK(bfsTree.isEdge(1, 2));
+    CHECK_FALSE(bfsTree.isEdge(3, 4)); // לא אמור לכלול רכיב מנותק
+}
+
+TEST_CASE("BFS - Full Connected Graph") {
+    Graph g(4);
+    g.addEdge(0, 1);
+    g.addEdge(0, 2);
+    g.addEdge(0, 3);
+    g.addEdge(1, 2);
+    g.addEdge(1, 3);
+    g.addEdge(2, 3);
+
+    Graph bfsTree = Algorithms::bfs(g, 0);
+    CHECK(bfsTree.isEdge(0, 1));
+    CHECK(bfsTree.isEdge(0, 2));
+    CHECK(bfsTree.isEdge(0, 3)); // כל הקודקודים ישירות מהשורש
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ------------------------ DFS ------------------------
 TEST_CASE("DFS Algorithm - Basic Cases") {
     Graph g1(0);
-    CHECK(Algorithms::dfs(g1, 0).getNumVertices() == 0);
+    CHECK_THROWS_WITH(Algorithms::dfs(g1, 0), "Invalid vertex index");
 
     Graph g2(1);
     Graph dfsTree2 = Algorithms::dfs(g2, 0);
@@ -59,6 +110,24 @@ TEST_CASE("DFS Algorithm - Basic Cases") {
     CHECK(dfsTree3.isEdge(0, 1));
     CHECK(dfsTree3.isEdge(1, 2));
     CHECK_FALSE(dfsTree3.isEdge(0, 2));
+}
+
+TEST_CASE("DFS - Deep Chain with Back Edge") {
+    Graph g(5);
+    g.addEdge(0, 1);
+    g.addEdge(1, 2);
+    g.addEdge(2, 3);
+    g.addEdge(3, 4);
+    g.addEdge(4, 0);  // back edge
+
+    Graph dfsTree = Algorithms::dfs(g, 0);
+
+    // רק קשתות עץ
+    CHECK(dfsTree.isEdge(0, 1));
+    CHECK(dfsTree.isEdge(1, 2));
+    CHECK(dfsTree.isEdge(2, 3));
+    CHECK(dfsTree.isEdge(3, 4));
+
 }
 
 
@@ -87,16 +156,6 @@ TEST_CASE("DFS Algorithm - Branching") {
 }
 
 
-//////////////////////////
-
-
-
-
-
-
-
-
-
 TEST_CASE("DFS Algorithm - Edge Cases") {
     Graph g4(4);
     g4.addEdge(0, 1);
@@ -107,6 +166,10 @@ TEST_CASE("DFS Algorithm - Edge Cases") {
     CHECK(dfsTree4.isEdge(0, 1));
     CHECK(dfsTree4.isEdge(1, 2));
 }
+
+
+
+
 
 // ------------------------ Dijkstra ------------------------
 TEST_CASE("Dijkstra Algorithm - Basic Cases") {
@@ -283,3 +346,13 @@ TEST_CASE("Visual Print of BFS Tree") {
     std::cout << "\nBFS Tree rooted at 0:\n";
     tree.printGraph(0); // 
 }
+
+
+
+
+
+
+
+
+
+

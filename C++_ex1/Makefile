@@ -1,41 +1,62 @@
 # Makefile for Graph Algorithms Project
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -std=c++11
+CXXFLAGS = -Wall -Wextra -std=c++17
 
-# Target executables
+# Executables
 MAIN_EXEC = Main
 TEST_EXEC = test
+HELPER_TEST_EXEC = test_helper
 
 # Source files
-SRCS = graph.cpp algorithms.cpp main.cpp
-OBJS = $(SRCS:.cpp=.o)
-TEST_SRCS = graph.cpp algorithms.cpp test.cpp
+SRC_FILES = graph.cpp algorithms.cpp helpers.cpp
+HDR_FILES = graph.hpp algorithms.hpp helpers.hpp doctest.h
+
+# Object files for main and test
+MAIN_SRCS = $(SRC_FILES) main.cpp
+MAIN_OBJS = $(MAIN_SRCS:.cpp=.o)
+
+TEST_SRCS = $(SRC_FILES) test.cpp
 TEST_OBJS = $(TEST_SRCS:.cpp=.o)
 
-# Default rule
-all: $(MAIN_EXEC) $(TEST_EXEC)
+HELPER_TEST_SRCS = helpers.cpp test_helper.cpp
+HELPER_TEST_OBJS = $(HELPER_TEST_SRCS:.cpp=.o)
 
-# Compile Main
-$(MAIN_EXEC): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(MAIN_EXEC) $(OBJS)
+# Default target
+all: $(MAIN_EXEC) $(TEST_EXEC) $(HELPER_TEST_EXEC)
 
-# Compile Tests
+# Build main executable
+$(MAIN_EXEC): $(MAIN_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+# Build unit test executable
 $(TEST_EXEC): $(TEST_OBJS)
-	$(CXX) $(CXXFLAGS) -o $(TEST_EXEC) $(TEST_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Run main program
+# Build helper test executable
+$(HELPER_TEST_EXEC): $(HELPER_TEST_OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+
+# Run programs
 run_main:
 	./$(MAIN_EXEC)
 
-# Run unit tests
 run_test:
 	./$(TEST_EXEC)
 
-# Run memory leak check
-valgrind:
+run_helper_test:
+	./$(HELPER_TEST_EXEC)
+
+# Memory leak checks (if valgrind installed)
+valgrind_main:
+	valgrind --leak-check=full ./$(MAIN_EXEC)
+
+valgrind_test:
 	valgrind --leak-check=full ./$(TEST_EXEC)
 
-# Clean unnecessary files
+valgrind_helper:
+	valgrind --leak-check=full ./$(HELPER_TEST_EXEC)
+
+# Clean build files
 clean:
-	rm -f $(OBJS) $(TEST_OBJS) $(MAIN_EXEC) $(TEST_EXEC)
+	rm -f *.o $(MAIN_EXEC) $(TEST_EXEC) $(HELPER_TEST_EXEC)

@@ -1,58 +1,11 @@
 #include "algorithms.hpp"
 #include "graph.hpp"
+#include "helpers.hpp"
 #include <iostream>
 #include <stdexcept>
 
 using namespace graph;
 
-// ------------------------ Queue for BFS (No STL) ------------------------
-class Queue {
-private:
-    int* arr;
-    int front, rear, size, capacity;
-public:
-    Queue(int cap) : capacity(cap), front(0), rear(-1), size(0) {
-        arr = new int[cap];
-    }
-    ~Queue() { delete[] arr; }
-    bool isEmpty() { return size == 0; }
-    void push(int val) {
-        if (size < capacity) arr[++rear] = val, size++;
-    }
-    int pop() {
-        if (isEmpty()) return -1;
-        int val = arr[front++];
-        size--;
-        return val;
-    }
-};
-
-// ------------------------ Disjoint Set (for Kruskal) ------------------------
-class DisjointSet {
-private:
-    int* parent;
-    int* rank;
-    int size;
-public:
-    DisjointSet(int n) : size(n) {
-        parent = new int[n];
-        rank = new int[n];
-        for (int i = 0; i < n; i++) parent[i] = i, rank[i] = 0;
-    }
-    ~DisjointSet() { delete[] parent; delete[] rank; }
-    int find(int u) {
-        if (parent[u] != u) parent[u] = find(parent[u]);
-        return parent[u];
-    }
-    void unite(int u, int v) {
-        int rootU = find(u), rootV = find(v);
-        if (rootU != rootV) {
-            if (rank[rootU] > rank[rootV]) parent[rootV] = rootU;
-            else if (rank[rootU] < rank[rootV]) parent[rootU] = rootV;
-            else parent[rootV] = rootU, rank[rootU]++;
-        }
-    }
-};
 
 // ------------------------ BFS ------------------------
 Graph Algorithms::bfs(const Graph& g, int src) {
@@ -81,6 +34,12 @@ Graph Algorithms::bfs(const Graph& g, int src) {
 // ------------------------ DFS ------------------------
 Graph Algorithms::dfs(const Graph& g, int src) {
     int n = g.getNumVertices();
+    
+    //Handling the case where the starting code is invalid or the graph is empty
+    if (src < 0 || src >= n) {
+        throw std::invalid_argument("Invalid vertex index");
+    }
+
     Graph tree(n);
     bool* visited = new bool[n]();
     int* stack = new int[n];
@@ -100,10 +59,12 @@ Graph Algorithms::dfs(const Graph& g, int src) {
             }
         }
     }
+
     delete[] visited;
     delete[] stack;
     return tree;
 }
+
 
 // ------------------------ Dijkstra ------------------------
 Graph Algorithms::dijkstra(const Graph& g, int src) {
