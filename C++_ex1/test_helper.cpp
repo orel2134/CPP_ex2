@@ -139,3 +139,37 @@ TEST_CASE("DisjointSet - Rank optimization works (no cycles)") {
     CHECK(ds.find(0) == ds.find(2));
     CHECK(ds.find(1) == ds.find(2));
 }
+//////////
+
+
+TEST_CASE("DisjointSet - multiple find compressions") {
+    DisjointSet ds(5);
+    ds.unite(0, 1);
+    ds.unite(1, 2);
+    ds.unite(2, 3);
+    int root = ds.find(3);
+    CHECK(ds.find(0) == root);
+    CHECK(ds.find(1) == root);
+    CHECK(ds.find(2) == root);
+    CHECK(ds.find(3) == root);
+}
+
+TEST_CASE("DisjointSet - no union if already in same set") {
+    DisjointSet ds(3);
+    ds.unite(0, 1);
+    int rootBefore = ds.find(1);
+    ds.unite(0, 1);
+    int rootAfter = ds.find(1);
+    CHECK(rootBefore == rootAfter);
+}
+
+TEST_CASE("DisjointSet - all elements into one set") {
+    DisjointSet ds(6);
+    for (int i = 0; i < 5; i++) {
+        ds.unite(i, i+1);
+    }
+    int root = ds.find(0);
+    for (int i = 1; i < 6; i++) {
+        CHECK(ds.find(i) == root);
+    }
+}
