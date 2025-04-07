@@ -1,82 +1,97 @@
-# Makefile for Graph Algorithms Project
+  # orel2744@gmail.com
+
+# makefile for graph algorithms project 
+
+
+# compiler and flags
 
 CXX = g++
 CXXFLAGS = -Wall -Wextra -std=c++17
 
-# Executable names
-MAIN_EXEC = Main
-TEST_EXEC = test_algo
-GRAPH_TEST_EXEC = test_graph
-HELPER_TEST_EXEC = test_helper
 
-# Source files
+# source and header files
+
 SRC = graph.cpp algorithms.cpp helpers.cpp
 HDR = graph.hpp algorithms.hpp helpers.hpp doctest.h
 
-# Object files
+
+# test files
+
+TEST_ALGO_SRC = test_algo.cpp
+TEST_GRAPH_SRC = test_graph.cpp
+TEST_HELPER_SRC = test_helper.cpp
+
+
+# executables
+
+MAIN_EXEC = Main
+TEST_ALGO_EXEC = test_algo
+TEST_GRAPH_EXEC = test_graph
+TEST_HELPER_EXEC = test_helper
+
+
+# object files
+
 MAIN_OBJS = $(SRC:.cpp=.o) main.o
 TEST_ALGO_OBJS = $(SRC:.cpp=.o) test_algo.o
 TEST_GRAPH_OBJS = graph.o test_graph.o
 TEST_HELPER_OBJS = helpers.o test_helper.o
 
-# Default target - build all
-all: $(MAIN_EXEC) $(TEST_EXEC) $(GRAPH_TEST_EXEC) $(HELPER_TEST_EXEC)
 
-# Main program
+# build rules
+
+
+all: $(MAIN_EXEC) $(TEST_ALGO_EXEC) $(TEST_GRAPH_EXEC) $(TEST_HELPER_EXEC)
+
 $(MAIN_EXEC): $(MAIN_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Algorithm tests
-$(TEST_EXEC): $(TEST_ALGO_OBJS)
+$(TEST_ALGO_EXEC): $(TEST_ALGO_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Graph tests
-$(GRAPH_TEST_EXEC): $(TEST_GRAPH_OBJS)
+$(TEST_GRAPH_EXEC): $(TEST_GRAPH_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Helper tests
-$(HELPER_TEST_EXEC): $(TEST_HELPER_OBJS)
+$(TEST_HELPER_EXEC): $(TEST_HELPER_OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# --------------------------
-# Run individual executables
-# --------------------------
+%.o: %.cpp $(HDR)
+	$(CXX) $(CXXFLAGS) -c $<
+
+
+# run targets
+
+
 run_main:
 	./$(MAIN_EXEC)
 
 run_algo_tests:
-	./$(TEST_EXEC)
+	./$(TEST_ALGO_EXEC)
 
 run_graph_tests:
-	./$(GRAPH_TEST_EXEC)
+	./$(TEST_GRAPH_EXEC)
 
 run_helper_tests:
-	./$(HELPER_TEST_EXEC)
+	./$(TEST_HELPER_EXEC)
 
-# --------------------------
-# Run all tests at once
-# --------------------------
 run_all_tests: run_algo_tests run_graph_tests run_helper_tests
 
-# --------------------------
-# Run with valgrind
-# --------------------------
-valgrind_main:
-	valgrind --leak-check=full ./$(MAIN_EXEC)
+
+# valgrind targets
 
 valgrind_algo:
-	valgrind --leak-check=full ./$(TEST_EXEC)
+	valgrind --leak-check=full ./$(TEST_ALGO_EXEC)
 
 valgrind_graph:
-	valgrind --leak-check=full ./$(GRAPH_TEST_EXEC)
+	valgrind --leak-check=full ./$(TEST_GRAPH_EXEC)
 
 valgrind_helper:
-	valgrind --leak-check=full ./$(HELPER_TEST_EXEC)
+	valgrind --leak-check=full ./$(TEST_HELPER_EXEC)
 
 valgrind_all: valgrind_algo valgrind_graph valgrind_helper
 
-# --------------------------
-# Clean everything
-# --------------------------
+
+# clean target
+
 clean:
-	rm -f *.o $(MAIN_EXEC) $(TEST_EXEC) $(GRAPH_TEST_EXEC) $(HELPER_TEST_EXEC)
+	rm -f *.o $(MAIN_EXEC) $(TEST_ALGO_EXEC) $(TEST_GRAPH_EXEC) $(TEST_HELPER_EXEC)

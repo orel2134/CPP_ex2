@@ -1,3 +1,5 @@
+//orel2744@gmail.com
+
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
@@ -9,15 +11,34 @@ namespace graph {
 
 class Graph {
 private:
-    int** adjacencyMatrix;  // Adjacency matrix representation
-    size_t numVertices;     // Number of vertices
+    struct Edge {
+        int dest;           // destination vertex
+        int weight;         // edge weight
+        Edge* next;         // pointer to next edge in list
+        
+        Edge(int d, int w) : dest(d), weight(w), next(nullptr) {}
+    };
+    
+    Edge** adjList;         // array of linked lists
+    size_t numVertices;     // number of vertices in graph
+
+    // Helper function to find an edge
+    Edge* findEdge(int src, int dest) const;
+    // Helper function to clear all edges
+    void clearEdges();
 
 public:
-    // Constructor: Initializes an empty adjacency matrix
+    // Constructor: Initializes an empty adjacency list
     Graph(size_t vertices);
-
+    
     // Destructor: Frees allocated memory
     ~Graph();
+    
+    // Copy constructor to prevent shallow copying
+    Graph(const Graph& other);
+    
+    // Assignment operator
+    Graph& operator=(const Graph& other);
 
     // Adds an edge between two vertices with a given weight (default = 1)
     void addEdge(int src, int dest, int weight = 1);
@@ -25,10 +46,10 @@ public:
     // Removes an edge between two vertices
     void removeEdge(int src, int dest);
 
-    // Prints the adjacency matrix
+    // Prints the adjacency list
     void printGraph() const;
 
-    // ✅ NEW: Prints the tree in a hierarchical format from a given root
+    // Print graph from root in hierarchical format
     void printGraph(int root, int level = 0, bool* visited = nullptr) const;
 
     // Returns the number of vertices in the graph
@@ -39,9 +60,6 @@ public:
 
     // Returns the weight of an edge
     int weight(int u, int v) const;
-
-    // Returns the adjacency matrix
-    int** getGraph() const;
 };
 
 } // namespace graph

@@ -1,7 +1,11 @@
+//orel2744@gmail.com
+
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 #include "graph.hpp"
 #include "algorithms.hpp"
+#include "helpers.hpp"
+
 
 using namespace graph;
 
@@ -229,7 +233,6 @@ TEST_CASE("Dijkstra Algorithm - Edge Cases") {
 
 
 
-/////////////////
 
 TEST_CASE("Dijkstra should throw on negative weight") {
     Graph g(3);
@@ -237,6 +240,38 @@ TEST_CASE("Dijkstra should throw on negative weight") {
     g.addEdge(1, 2, -4); // Invalid for Dijkstra
 
     CHECK_THROWS_WITH(Algorithms::dijkstra(g, 0), "Dijkstra cannot handle negative edge weights");
+}
+
+/////////////////////////
+TEST_CASE("Dijkstra - Result tree has no cycles") {
+    Graph g(5);
+    g.addEdge(0, 1, 2);
+    g.addEdge(1, 2, 3);
+    g.addEdge(1, 3, 1);
+    g.addEdge(3, 4, 4);
+    g.addEdge(0, 4, 100); // לא ייכנס בגלל משקל גבוה
+
+    Graph result = Algorithms::dijkstra(g, 0);
+
+    // Use Disjoint Set to detect cycles
+    int n = result.getNumVertices();
+    REQUIRE(n > 0);
+    DisjointSet ds(n);
+    bool hasCycle = false;
+
+    for (int u = 0; u < n; ++u) {
+        for (int v = u + 1; v < n; ++v) {
+            if (result.isEdge(u, v)) {
+                if (ds.find(u) == ds.find(v)) {
+                    hasCycle = true;
+                } else {
+                    ds.unite(u, v);
+                }
+            }
+        }
+    }
+
+    CHECK_FALSE(hasCycle);
 }
 
 
@@ -297,6 +332,16 @@ TEST_CASE("Prim with Negative Weights") {
     CHECK(primTree.isEdge(2, 3)); // -1
     // the third edge could be 1-2 or 0-3 depending on internal priority, so we allow both:
     CHECK((primTree.isEdge(1, 2) || primTree.isEdge(0, 3)));
+}
+
+
+
+TEST_CASE("Prim throws on disconnected graph") {
+    Graph g(4);
+    g.addEdge(0, 1, 1);
+    g.addEdge(2, 3, 1); // Component disconnected from 0 and 1
+
+    CHECK_THROWS_WITH(Algorithms::prim(g), "Graph is not connected");
 }
 
 
