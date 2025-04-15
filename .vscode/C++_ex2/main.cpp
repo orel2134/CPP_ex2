@@ -4,6 +4,8 @@
 using namespace std;
 using namespace MyMath;
 
+// Fills a matrix with consecutive values starting from the base value
+// Useful for quick initialization of matrices A and B
 void fillMatrix(SquareMat& mat, double base = 1) {
     int n = mat.getSize();
     for (int i = 0; i < n; ++i)
@@ -11,6 +13,7 @@ void fillMatrix(SquareMat& mat, double base = 1) {
             mat.set(i, j, base + i * n + j);
 }
 
+// Displays a menu of available matrix operations to the user
 void menu() {
     cout << "\nChoose an operator to apply:\n";
     cout << "1. Addition (A + B)\n";
@@ -35,6 +38,7 @@ void menu() {
     cout << "0. Exit\n";
 }
 
+// Entry point for testing SquareMat functionality via menu
 int main() {
     int n = 2;
     SquareMat A(n), B(n);

@@ -26,7 +26,7 @@ public:
     double* operator[](int i);
     const double* operator[](int i) const;
 
-    SquareMat operator~() const;
+    SquareMat operator~() const;//operator transpose
 
     bool operator==(const SquareMat& other) const;
     bool operator!=(const SquareMat& other) const;
