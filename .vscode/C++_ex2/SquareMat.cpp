@@ -240,6 +240,7 @@ SquareMat& SquareMat::operator*=(const SquareMat& other) {
 }
 
 // Compound scalar multiplication
+
 SquareMat& SquareMat::operator*=(double scalar) {
     *this = *this * scalar;
     return *this;

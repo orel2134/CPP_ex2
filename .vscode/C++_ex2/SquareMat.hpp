@@ -66,4 +66,4 @@ public:
 
 } // namespace MyMath
 
-#endif // SQUAREMAT_HPP
+#endif 
