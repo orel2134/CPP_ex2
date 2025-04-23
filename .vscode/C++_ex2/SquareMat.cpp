@@ -31,6 +31,7 @@ SquareMat& SquareMat::operator=(const SquareMat& other) {
     }
     return *this;
 }
+// until here the rule of three
 
 // Copy helper
 void SquareMat::copyFrom(const SquareMat& other) {
@@ -93,13 +94,13 @@ SquareMat SquareMat::operator~() const {
     SquareMat trans(size);
     for (int i = 0; i < size; ++i)
         for (int j = 0; j < size; ++j)
-            trans.data[j * size + i] = data[i * size + j];
+            trans.data[(j * size) + i] = data[(i * size) + j];
     return trans;
 }
 
 // Equality operator
 bool SquareMat::operator==(const SquareMat& other) const {
-    return sum() == other.sum();
+    return size == other.size && sum() == other.sum();
 }
 
 // Inequality operator
@@ -142,6 +143,8 @@ SquareMat SquareMat::operator-() const {
 
 // Addition
 SquareMat SquareMat::operator+(const SquareMat& other) const {
+    if (size != other.size)
+        throw std::invalid_argument("Matrix sizes must match for addition");
     SquareMat result(size);
     for (int i = 0; i < size * size; ++i)
         result.data[i] = data[i] + other.data[i];
@@ -150,6 +153,8 @@ SquareMat SquareMat::operator+(const SquareMat& other) const {
 
 // Subtraction
 SquareMat SquareMat::operator-(const SquareMat& other) const {
+    if (size != other.size)
+        throw std::invalid_argument("Matrix sizes must match for subtraction");
     SquareMat result(size);
     for (int i = 0; i < size * size; ++i)
         result.data[i] = data[i] - other.data[i];
@@ -158,7 +163,7 @@ SquareMat SquareMat::operator-(const SquareMat& other) const {
 
 // Matrix multiplication
 SquareMat SquareMat::operator*(const SquareMat& other) const {
-    SquareMat result(size);
+    SquareMat result(size);//store the result squaremat
     for (int i = 0; i < size; ++i)
         for (int j = 0; j < size; ++j) {
             double sum = 0;
@@ -301,5 +306,6 @@ std::ostream& operator<<(std::ostream& os, const SquareMat& mat) {
     }
     return os;
 }
+
 
 } // namespace MyMath
