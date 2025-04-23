@@ -15,6 +15,7 @@ TEST_CASE("Addition operator +") {
     CHECK(result.get(1, 0) == 10);
     CHECK(result.get(1, 1) == 12);
 }
+//
 
 TEST_CASE("Subtraction operator -") {
     SquareMat A(2), B(2);

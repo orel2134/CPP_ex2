@@ -65,5 +65,5 @@ public:
 };
 
 } // namespace MyMath
-
+//
 #endif 

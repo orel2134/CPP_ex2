@@ -34,3 +34,4 @@ test: $(TEST_EXEC)
 # Clean compiled files
 clean:
 	rm -f $(MAIN_EXEC) $(TEST_EXEC)
+#end

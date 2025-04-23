@@ -151,7 +151,7 @@ SquareMat SquareMat::operator+(const SquareMat& other) const {
     return result;
 }
 
-// Subtraction
+/// Subtraction
 SquareMat SquareMat::operator-(const SquareMat& other) const {
     if (size != other.size)
         throw std::invalid_argument("Matrix sizes must match for subtraction");
