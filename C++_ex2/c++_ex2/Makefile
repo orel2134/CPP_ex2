@@ -31,7 +31,10 @@ run: $(MAIN_EXEC)
 test: $(TEST_EXEC)
 	./$(TEST_EXEC)
 
+# Run valgrind memory check (requires valgrind to be installed)
+valgrind: $(TEST_EXEC)
+	valgrind --leak-check=full ./$(TEST_EXEC)
+
 # Clean compiled files
 clean:
 	rm -f $(MAIN_EXEC) $(TEST_EXEC)
-#end
