@@ -1,19 +1,4 @@
-השיחה נפתחה. הודעה אחת נקראה.
 
-דילוג לתוכן
-שימוש ב-Gmail עם קוראי מסך
-1 מתוך 4,800
-cpp_ex2‏
-דואר נכנס
-
-אוראל <orel2744@gmail.com‏>
-קבצים מצורפים
-1:18 ‎(לפני 46 דקות)‎
-אני
-
-
- 4 קבצים מצורפים
-  •  נסרקו על ידי Gmail
 #include "SquareMat.hpp"
 #include <stdexcept>
 #include <iomanip>
@@ -213,11 +198,17 @@ SquareMat SquareMat::operator%(const SquareMat& other) const {
 
 // Modulo with scalar
 SquareMat SquareMat::operator%(int scalar) const {
+    if (scalar == 0) throw std::invalid_argument("Modulo by zero is undefined");
     SquareMat result(size);
-    for (int i = 0; i < size * size; ++i)
-        result.data[i] = static_cast<int>(data[i]) % scalar;
+    for (int i = 0; i < size * size; ++i) {
+        int val = static_cast<int>(data[i]);
+        int m = scalar;
+        int mod = ((val % m) + m) % m;
+        result.data[i] = mod;
+    }
     return result;
 }
+
 
 // Division by scalar
 SquareMat SquareMat::operator/(double scalar) const {
