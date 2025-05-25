@@ -151,4 +151,4 @@ bool Game::wasArrestedByMeLastTurn(Player* source, Player* target) const {
     auto it = arrestLog.find(source);
     return it != arrestLog.end() && it->second == target;
 }
-//
+///
