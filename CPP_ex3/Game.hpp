@@ -59,3 +59,4 @@ public:
     bool wasArrestedByMeLastTurn(Player* source, Player* target) const;
 
 };
+//

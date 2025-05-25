@@ -31,3 +31,4 @@ inline std::string roleToString(Role role) {
 }
 
 #endif // 
+//

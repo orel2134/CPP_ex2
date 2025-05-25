@@ -118,3 +118,4 @@ TEST_CASE("Attempting illegal actions") {
     for (int i = 0; i < 7; ++i) { p1.gather(); p2.gather(); }
     CHECK_THROWS(p1.coup(p1));
 }
+//
