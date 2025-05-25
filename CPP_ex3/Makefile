@@ -8,3 +8,4 @@ game_gui: main_gui.cpp Game.cpp Player.cpp Game.hpp Player.hpp Role.hpp
 
 clean:
 	@rm -f test_game game_gui
+//
